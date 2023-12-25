@@ -36,7 +36,7 @@ ventana = tk.Tk()
 ventana.title("Mostrar Vectores")
 ventana.geometry("500x500")
 # Crear una Listbox para mostrar los datos
-listbox_datos = tk.Listbox(ventana, width=50, height=10)
+listbox_datos = tk.Listbox(ventana, width=40, height=10)
 listbox_datos.pack(pady=10)
 
 

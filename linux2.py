@@ -58,9 +58,10 @@ def actualizar_datos():
 
     # Programar la siguiente actualización
     ventana.after(5000, actualizar_datos)  # actualizar cada 5 segundos
-
+#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # Crear la ventana principal
 ventana = tk.Tk()
+ventana.geometry("800x600")
 ventana.title("Información de Procesos")
 
 # Crear el Treeview
@@ -72,16 +73,39 @@ tree.heading('Memoria', text='Memoria (bytes)')
 tree.heading('Timellegada',text='Time llegada')
 tree.heading('Timeejecucion',text='Time ejecucion')
 tree.heading('Timerafaga',text='Time rafaga')
+#definimos las columnas
+tree.column('PID', width=20, minwidth=5)
+tree.column('Nombre', width=100, minwidth=50)
+tree.column('Usuario', width=100, minwidth=50)
+tree.column('Memoria', width=80, minwidth=40)
+tree.column('Timellegada', width=100, minwidth=50)
+tree.column('Timeejecucion', width=100, minwidth=50)
+tree.column('Timerafaga', width=100, minwidth=50)
 
-tree.pack(expand=True, fill='both')
+#dimensiones del treeview
+tree.place(x=0, y=0, width=600, height=400)
+
 
 
 # Botón para actualizar manualmente
-boton_actualizar = tk.Button(ventana, text="Actualizar Ahora", command=actualizar_datos)
+boton_actualizar = tk.Button(ventana, text="Actualizar", command=actualizar_datos)
 boton_actualizar.pack()
+boton_actualizar.place(x=0,y=410,width=70,height=25)
+#nuevos colas de procesos
+label = tk.Label(ventana,text="Procesos en Cola")
+label.place(x=605,y=0,width=150,height=20)
+Cola_pro = tk.Listbox(ventana, width=20, height=10)  # 20 caracteres de ancho, 10 líneas de alto
+Cola_pro.insert(2, "Opción 2 en Listbox 1")
+Cola_pro.place(x=605,y=20,width=200,height=100)
+#Procesos en el CPu
 
+labelcpu = tk.Label(ventana,text="Procesos en el cpu")
+labelcpu.place(x=605,y=125,width=150,height=20)
+cpu_pro = tk.Listbox(ventana, width=20, height=10)  # 20 caracteres de ancho, 10 líneas de alto
+cpu_pro.insert(1, "Opción 1 en Listbox 1")
+cpu_pro.insert(2, "Opción 2 en Listbox 1")
+cpu_pro.place(x=605,y=150,width=200,height=100)
 # Iniciar la actualización automática
 actualizar_datos()
-
 # Ejecutar la aplicación
 ventana.mainloop()

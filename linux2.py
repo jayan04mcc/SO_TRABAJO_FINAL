@@ -142,7 +142,7 @@ def showfinal():
 boton_fcfs =tk.Button(ventana, text='FCFS',command=showfinal)
 boton_fcfs.pack()
 boton_fcfs.place(x=80,y=410,width=70,height=25)
-
+#comen
 # Iniciar la actualización automática
 actualizar_datos()
 # Ejecutar la aplicación

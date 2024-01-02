@@ -1,4 +1,58 @@
 import tkinter as tk
+import subprocess
+
+#Crear la ventana principal
+print("inicio")
+ventana = tk.Tk()
+ventana.title("ALGORITMO FCFS")
+ventana.geometry("600x600")
+print("Creando ventana principal")
+
+# Nombre del archivo de salida
+nombre_archivo = 'salida.txt'
+# variable para almacenar el numero de procesos
+nroProcesos=0
+
+# Lista de procesos
+procesos=[]
+
+#listbox
+listbox = tk.Listbox(ventana, width=50, height=10)
+listbox.pack(pady=20)
+
+# Ejecutar un comando y redirigir la salida a un archivo de texto
+with open(nombre_archivo, 'w') as archivo:
+    subprocess.run('ps -eo pid,comm,%cpu,%mem --sort=-%cpu | head', shell=True, stdout=archivo, text=True)
+
+print(f"La salida del comando se ha guardado en {nombre_archivo}")
+
+with open(nombre_archivo, 'r') as archivo_entrada:
+    # Lee todas las líneas del archivo
+    lineas = archivo_entrada.readlines()
+
+# Elimina los espacios en blanco al inicio de cada línea y sobrescribe el archivo original
+with open(nombre_archivo, 'w') as archivo_salida:
+    for linea in lineas:
+        linea_sin_espacios = linea.lstrip()  # Elimina espacios en blanco al inicio
+        archivo_salida.write(linea_sin_espacios)
+
+tercera_columna = []
+lista_total=[]
+# Lee el contenido del archivo modificado
+with open(nombre_archivo, 'r') as archivo_modificado:
+    for linea in archivo_modificado:
+        if not linea.strip():
+            continue  # Ignorar líneas vacías
+
+        palabras = linea.split()  # Ajustar según el delimitador correcto
+        if len(palabras) >= 3:
+            tercera_columna.append(palabras[2].strip())
+        lista_total.append(palabras)
+        nroProcesos+=1
+
+
+
+
 
 class Proceso:
     def __init__(self, id, tiempoLlegada, tiempoRafaga, tiempoEspera=0, tiempoRespuesta=0):
@@ -9,12 +63,19 @@ class Proceso:
         self.tiempoRespuesta = tiempoRespuesta
 
 
-def initProcess(procesos, n):
-    for i in range(n):
+def initProcess():
+    #obteniendo el numero de procesos
+    
+    #mostrando el numero de procesos
+    labelNroEtiquetas = tk.Label(ventana, text=f"El numero de procesos actual es: {nroProcesos}")
+    labelNroEtiquetas.pack()
+    #ventana.mainloop()
+    for i in range(nroProcesos):
         id = i + 1
         # Crear una etiqueta para pedir el numero de procesos
-        tiempoLlegada = int(input(f"Tiempo de llegada para el proceso {id}: "))
-        tiempoRafaga = int(input(f"Tiempo de rafaga para el proceso {id}: "))
+        #en esta parte se va a obtener los datos de los procesos del sistema
+        tiempoLlegada = 0 #se supone que el tiempo de inicio es 0 para todos los procesos
+        tiempoRafaga = 5
         procesos.append(Proceso(id, tiempoLlegada, tiempoRafaga))
 
 
@@ -62,57 +123,39 @@ def fcfs(procesos):
 
 
 def mostrarProcesos(procesos):
+    listbox.delete(0, tk.END)  # Limpiar el Listbox antes de agregar nuevos elementos
     for proceso in procesos:
+        """
         print(f"Proceso {proceso.id}, T. llegada {proceso.tiempoLlegada}, "
               f"T. rafaga {proceso.tiempoRafaga}, "
               f"T. espera {proceso.tiempoEspera}, "
               f"T. respuesta {proceso.tiempoRespuesta}.")
+        """
+
+        info = (f"Proceso {proceso.id}, T. llegada {proceso.tiempoLlegada}, "
+                f"T. rafaga {proceso.tiempoRafaga}, "
+                f"T. espera {proceso.tiempoEspera}, "
+                f"T. respuesta {proceso.tiempoRespuesta}.")
+        listbox.insert(tk.END, info)
+
+        ventana.mainloop()
 
 
-#variable para almacenar el numero de procesos
-nroProcesos=0
-
-def obteniendoNroProcesos(inputNroProcesos):
-    global nroProcesos
-    valorNroProcesos=inputNroProcesos.get()
-
-    try:
-        # Intenta convertir el valor a un número entero
-        nroProcesos = int(valorNroProcesos)
-    except ValueError:
-        # Si no se puede convertir a número entero, muestra un mensaje de error
-        print("El numero ingresado no es un entero")
 
 
 def main():
-    # Crear la ventana principal
-    print("inicio")
-    ventana = tk.Tk()
-    ventana.title("ALGORITMO FCFS")
-    ventana.geometry("600x600")
-    print("Creando ventana principal")
-    # Crear una etiqueta para pedir el numero de procesos
-    labelNroProcesos = tk.Label(ventana, text="Ingrese el numero de procesos: ")
-    labelNroProcesos.pack(pady=10)
-    
-    # Crear un campo de entrada (input), para recibir el numero de procesos
-    inputNroProcesos = tk.Entry(ventana)
-    inputNroProcesos.pack(pady=10)
     
     # Botón para obtener los valores ingresados
-    boton = tk.Button(ventana, text="Obteniendo los valores", command=lambda: obteniendoNroProcesos(inputNroProcesos))
+    boton = tk.Button(ventana, text="Obtener los procesos", command=initProcess)
     boton.pack(pady=10)
     ventana.mainloop()
     print(nroProcesos)
     if(nroProcesos == 0):
         return
     
-    #nroProcesos = int(input("Ingrese el numero de procesos: "))
-    procesos = []
-    initProcess(procesos, nroProcesos)
     print("INICIO")
     mostrarProcesos(procesos)
-    fcfs(procesos)
+    #fcfs(procesos)
 
 
 if __name__ == "__main__":

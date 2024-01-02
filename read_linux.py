@@ -33,6 +33,7 @@ with open(nombre_archivo, 'r') as archivo_modificado:
             tercera_columna.append(palabras[2].strip())
         lista_total.append(palabras)
 
+
 def mostrar_vector(vector):
     # Limpiar la Listbox
     listbox_datos.delete(0, tk.END)

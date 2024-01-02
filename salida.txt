@@ -1,0 +1,10 @@
+PID COMMAND         %CPU %MEM
+1743 firefox-bin      7.5 16.1
+972 pulseaudio       5.9  0.8
+2024 Isolated Web Co  4.1  6.4
+1380 cinnamon         3.8  6.7
+1974 Isolated Web Co  2.8  5.8
+893 Xorg             2.2  3.8
+2982 gnome-terminal-  0.7  2.5
+2117 nemo             0.6  3.3
+1724 mintreport-tray  0.5  1.3

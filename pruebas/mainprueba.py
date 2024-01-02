@@ -1,7 +1,7 @@
 import tkinter as tk
 import time
 from collections import deque
-class Proceso:
+class Proceso: # definimos la clase
     def __init__(self, nombre, tiempo_llegada, duracion):
         self.nombre = nombre
         self.tiempo_llegada = tiempo_llegada
@@ -30,10 +30,6 @@ listbox_cola.place(x=50, y=50, width=300, height=300)
 # Crear el Listbox para la CPU
 listbox_cpu = tk.Listbox(ventana)
 listbox_cpu.place(x=450, y=50, width=300, height=300)
-def show_now(listbox,elementos):
-    listbox.delete(0, tk.END)
-    for elemento in elementos:
-        listbox.insert(tk.END, elemento)
 
 def actualizar_listbox(listbox, elementos):
     listbox.delete(0, tk.END)
@@ -66,6 +62,8 @@ def fcfs(procesos):
         # Simular el tiempo de procesamiento
         ventana.update()
         time.sleep(1)  # Ajusta este tiem
+
+
 
 boton_iniciar = tk.Button(ventana, text="Iniciar Simulación", command=lambda: fcfs(procesos))
 boton_iniciar.place(x=350, y=10)

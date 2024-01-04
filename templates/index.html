@@ -2,11 +2,9 @@
 {%block title%}Visualizador de procesos{%endblock%}
 {%block body%}
 <h1>Visualizador de procesos</h1>
-<img src="https://getbootstrap.com/docs/5.3/assets/img/bootstrap-themes.png" alt="grafico">
-<img src="../gantt_chart.png">
 <div class="row">
     <div class="col-md-8 offset-md-1">
-        <h1>Lista de procesos</h1>
+        <h2>Lista de procesos</h2>
         <div class="table-responsive">
             <table class="table table-striped text-center">
                 <thead>
@@ -31,4 +29,35 @@
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-md-8 offset-md-1">
+        <h2>Algoritmo FCFS</h2>
+        <table class="table table-striped text-center">
+            <thead>
+                <tr>
+                    <th>ID Proceso</th>
+                    <th class="col">Tiempo de creacion</th>
+                    <th>Tiempo rafaga</th>
+                    <th>Tiempo de espera</th>
+                    <th>Tiempo de respuesta</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {%for proceso in resultados%}
+                <tr>
+                    <td class="col">{{proceso.id}}</td>
+                    <td class="col">{{proceso.tiempoLlegada}}</td>
+                    <td class="col">{{proceso.tiempoRafaga}}</td>
+                    <td class="col">{{proceso.tiempoEspera}}</td>
+                    <td class="col">{{proceso.tiempoRespuesta}}</td>
+                </tr>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+        
+
 {%endblock%}

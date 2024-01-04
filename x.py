@@ -20,21 +20,33 @@ def obtener_procesos():
             # Obtener el tiempo total de ejecución (tiempo de ráfaga) del proceso
             tiempo_rafaga = round(sum(proceso.cpu_times()),3)
             
-            procesos.append((pid, nombre, tiempo_llegada, tiempo_rafaga))
+            uid, _, _ = proceso.uids()  # Obtener el ID del usuario propietario del proceso
+            #procesos.append((pid, nombre, tiempo_llegada, tiempo_rafaga))
+            #if(tiempo_rafaga != 0.0):
+            #    procesos.append((pid, nombre, 0, tiempo_rafaga))
+            
+            if uid == 0:  # ID del usuario root para procesos del sistema
+                print("procesos del usuario root para procesos del sistema")
+                #procesos.append((pid, nombre, 0, tiempo_rafaga))
+            else:
+                #print("ELSE: procesos del usuario root")
+                procesos.append((pid, nombre, 0, tiempo_rafaga))
+
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             continue
 
     return procesos
 
 # Obtener la lista de procesos
-#lista_procesos = obtener_procesos()
+lista_procesos = obtener_procesos()
+"""
 lista_procesos=[
     ("p1","Word",0,10),
     ("p2","Excel",0,1),
     ("p3","VSCode",0,2),
     ("p4","Python",0,1),
     ("p5","Google",0,5),
-]
+]"""
 
 
 

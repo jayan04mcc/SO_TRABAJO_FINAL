@@ -19,7 +19,7 @@ class Proceso:
 
 def initProcess():
     procesos=[]
-    for i in range(5):
+    for i in range(len(lista_procesos)):
         tiempoLlegada=lista_procesos[i][2]
         tiempoRafaga=lista_procesos[i][3]
         procesos.append(Proceso(lista_procesos[i][0], lista_procesos[i][1], tiempoLlegada, tiempoRafaga))
@@ -45,11 +45,11 @@ def tiempoEsperaYRespuesta(procesos):
     procesos[0].tiempoEspera = clock
 
     for proceso in procesos:
-        tiempoEspera = clock - proceso.tiempoLlegada
+        tiempoEspera = round(clock - proceso.tiempoLlegada,3)
         proceso.tiempoEspera = tiempoEspera
         tiempoEsperaPromedio += tiempoEspera
 
-        tiempoRespuesta = tiempoEspera + proceso.tiempoRafaga
+        tiempoRespuesta = round(tiempoEspera + proceso.tiempoRafaga,3)
         proceso.tiempoRespuesta = tiempoRespuesta
         tiempoRespuestaPromedio += tiempoRespuesta
         #guardando la informacion necesaria para realizar el grafico
@@ -61,8 +61,8 @@ def tiempoEsperaYRespuesta(procesos):
     #print("COMPLETO")
     #print(f"Tiempo de espera promedio: {tiempoEsperaPromedio / n:.2f} milisegundos.")
     #print(f"Tiempo de respuesta promedio: {tiempoRespuestaPromedio / n:.2f} milisegundos.")
-    respuestas.append(tiempoEsperaPromedio/n)
-    respuestas.append(tiempoRespuestaPromedio/n)
+    respuestas.append(round(tiempoEsperaPromedio/n,3))
+    respuestas.append(round(tiempoRespuestaPromedio/n,3))
 
 def mostrarProcesos(procesos):
     for proceso in procesos:

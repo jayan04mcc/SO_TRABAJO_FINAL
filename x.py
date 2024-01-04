@@ -25,8 +25,8 @@ def obtener_procesos():
     return procesos
 
 # Obtener la lista de procesos
-lista_procesos = obtener_procesos()
-
+#lista_procesos = obtener_procesos()
+lista_procesos=[["p1","p2","p3","p4","p5"],["Word","Excel","VSCode","Google","Paint"],[0,0,0,0,0],[10,1,2,1,5]]
 
 
 

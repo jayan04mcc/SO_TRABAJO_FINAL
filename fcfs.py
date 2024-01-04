@@ -3,12 +3,16 @@
 from x import lista_procesos
 
 respuestas=[]
+#listas para realizar los graficos
+inicio=[]
+duracion=[]
 
 class Proceso:
-    def __init__(self, id, tiempoLlegada, tiempoRafaga, tiempoEspera=0, tiempoRespuesta=0):
+    def __init__(self, id, nombre, tiempoLlegada, tiempoRafaga, tiempoEspera=0, tiempoRespuesta=0):
         self.id = id
         self.tiempoLlegada = tiempoLlegada
         self.tiempoRafaga = tiempoRafaga
+        self.nombre=nombre
         self.tiempoEspera = tiempoEspera
         self.tiempoRespuesta = tiempoRespuesta
 
@@ -18,7 +22,7 @@ def initProcess():
     for i in range(5):
         tiempoLlegada=lista_procesos[i][2]
         tiempoRafaga=lista_procesos[i][3]
-        procesos.append(Proceso(lista_procesos[i][0], tiempoLlegada, tiempoRafaga))
+        procesos.append(Proceso(lista_procesos[i][0], lista_procesos[i][1], tiempoLlegada, tiempoRafaga))
     return procesos
 
 def swap(procesos, i, j):
@@ -48,6 +52,9 @@ def tiempoEsperaYRespuesta(procesos):
         tiempoRespuesta = tiempoEspera + proceso.tiempoRafaga
         proceso.tiempoRespuesta = tiempoRespuesta
         tiempoRespuestaPromedio += tiempoRespuesta
+        #guardando la informacion necesaria para realizar el grafico
+        inicio.append(clock)
+        duracion.append(proceso.tiempoRafaga)
 
         clock += proceso.tiempoRafaga
 

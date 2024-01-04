@@ -1,0 +1,2 @@
+instalar Flask (pip install Flask)
+instalar psutil (pip install psutil)

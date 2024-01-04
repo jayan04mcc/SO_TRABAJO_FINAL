@@ -1,3 +1,5 @@
+#PRIMER ARCHIVO
+#Su funcion unicamente es extraer los procesos del sistema, con sus datos mas relevantes
 import psutil
 import time
 

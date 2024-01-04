@@ -55,6 +55,26 @@
                 {%endfor%}
             </tbody>
         </table>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Tiempo de Espera Promedio</h5>
+                        <p class="card-text">{{tiempos[0]}} milisegundos</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Respuesta Promedio</h5>
+                        <p class="card-text">{{tiempos[1]}} milisegundos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

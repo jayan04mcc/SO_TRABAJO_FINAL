@@ -1,7 +1,8 @@
-import tkinter as tk
+#2DO ARCHIVO
+#se extrae los procesos obtenidos del sistema, los cuales se encuentran en la lista_procesos
 from x import lista_procesos
 
-
+respuestas=[]
 
 class Proceso:
     def __init__(self, id, tiempoLlegada, tiempoRafaga, tiempoEspera=0, tiempoRespuesta=0):
@@ -50,9 +51,11 @@ def tiempoEsperaYRespuesta(procesos):
 
         clock += proceso.tiempoRafaga
 
-    print("COMPLETO")
-    print(f"Tiempo de espera promedio: {tiempoEsperaPromedio / n:.2f} milisegundos.")
-    print(f"Tiempo de respuesta promedio: {tiempoRespuestaPromedio / n:.2f} milisegundos.")
+    #print("COMPLETO")
+    #print(f"Tiempo de espera promedio: {tiempoEsperaPromedio / n:.2f} milisegundos.")
+    #print(f"Tiempo de respuesta promedio: {tiempoRespuestaPromedio / n:.2f} milisegundos.")
+    respuestas.append(tiempoEsperaPromedio/n)
+    respuestas.append(tiempoRespuestaPromedio/n)
 
 def mostrarProcesos(procesos):
     for proceso in procesos:
@@ -65,12 +68,7 @@ def mostrarProcesos(procesos):
 
 def fcfs(procesos):
     ordenarProcesosPorTiempoLlegada(procesos)
-    #print("ORDENADO")
-    #mostrarProcesos(procesos)
     tiempoEsperaYRespuesta(procesos)
-    #print("Finalizo")
-
-
 
 
 # Lista de procesos

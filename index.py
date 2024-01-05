@@ -2,15 +2,15 @@ from flask import Flask, render_template, send_from_directory
 import os
 import subprocess
 
-from x import lista_procesos
+from x import obtener_procesos
 from fcfs import procesos, respuestas
-#from gantt import mostrar
 
 app = Flask(__name__)
 
 #voy a indicar la ruta raiz
 @app.route("/")
 def principal():
+    lista_procesos=obtener_procesos()
     return render_template("index.html", procesos=lista_procesos, resultados=procesos, tiempos=respuestas) #buscara la vista y la mostrara
 
 @app.route('/mostrar_gantt')

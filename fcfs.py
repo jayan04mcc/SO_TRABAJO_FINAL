@@ -1,11 +1,9 @@
 #2DO ARCHIVO
 #se extrae los procesos obtenidos del sistema, los cuales se encuentran en la lista_procesos
-from x import lista_procesos
+#from x import lista_procesos
 
 respuestas=[]
-#listas para realizar los graficos
-inicio=[]
-duracion=[]
+
 
 class Proceso:
     def __init__(self, id, nombre, tiempoLlegada, tiempoRafaga, tiempoEspera=0, tiempoRespuesta=0):
@@ -17,7 +15,7 @@ class Proceso:
         self.tiempoRespuesta = tiempoRespuesta
 
 
-def initProcess():
+def initProcess(lista_procesos):
     procesos=[]
     for i in range(len(lista_procesos)):
         tiempoLlegada=lista_procesos[i][2]
@@ -38,6 +36,10 @@ def ordenarProcesosPorTiempoLlegada(procesos):
 
 
 def tiempoEsperaYRespuesta(procesos):
+    #listas para realizar los graficos
+    inicio=[]
+    duracion=[]
+
     n = len(procesos)
     tiempoEsperaPromedio = 0.0
     tiempoRespuestaPromedio = 0.0
@@ -58,11 +60,9 @@ def tiempoEsperaYRespuesta(procesos):
 
         clock += proceso.tiempoRafaga
 
-    #print("COMPLETO")
-    #print(f"Tiempo de espera promedio: {tiempoEsperaPromedio / n:.2f} milisegundos.")
-    #print(f"Tiempo de respuesta promedio: {tiempoRespuestaPromedio / n:.2f} milisegundos.")
     respuestas.append(round(tiempoEsperaPromedio/n,3))
     respuestas.append(round(tiempoRespuestaPromedio/n,3))
+    return (respuestas, inicio,duracion)
 
 def mostrarProcesos(procesos):
     for proceso in procesos:
@@ -75,12 +75,10 @@ def mostrarProcesos(procesos):
 
 def fcfs(procesos):
     ordenarProcesosPorTiempoLlegada(procesos)
-    tiempoEsperaYRespuesta(procesos)
+    respuestas=tiempoEsperaYRespuesta(procesos)
+    return respuestas
 
 
-# Lista de procesos
-procesos=initProcess()
-fcfs(procesos)
 
 
 

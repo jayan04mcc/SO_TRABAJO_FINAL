@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from fcfs import procesos, inicio, duracion
 
 from matplotlib.backend_bases import Event
 
@@ -9,6 +8,35 @@ from matplotlib.backend_bases import Event
 from matplotlib.backend_bases import MouseEvent
 
 
+maquinas=[]
+nroProcesos=0
+ # Datos
+ht = 20 #numero de tiempo que se vera en un inicio
+nmaq = nroProcesos #numero de procesos
+hbar = 20 #altura de cada barra
+tticks = 10 #no se usa
+#maquinas = ["P1", "P2", "P3","P4","P5"] #nombres de las maquinas
+
+# Creación de los objetos del plot:
+fig, gantt = plt.subplots()
+
+
+#gantt.set_yticklabels(maquinas)
+
+# Función para armar tareas:
+def agregar_tarea(t0, d, maq, nombre, color):
+# Índice de la máquina:
+    imaq = maquinas.index(maq)
+    # Posición de la barra:
+    gantt.broken_barh([(t0, d)], (hbar*imaq, hbar),
+                        facecolors=(color))
+    #Posición del texto:
+    #gantt.text(x=(t0 + d/2), y=(hbar*imaq + hbar/2),
+     #              s=f"{nombre} ({d})", va='center', color='white')
+
+# Agregamos dos tareas de ejemplo:
+
+#agregar_tarea(0, 9, "P1", "T1", "b")
 
 
 #funcion para manejar el evento de la rueda del mouse
@@ -39,79 +67,6 @@ def on_scroll(event):
         plt.draw()
 
 
-
-nroProcesos=len(procesos)
-
-#creando un arreglo para obtener los nombres
-#de los procesos
-maquinas=[]
-for i in range(nroProcesos):
-   maquinas.append(procesos[i].id)
-
-# Datos
-ht = 20 #numero de tiempo que se vera en un inicio
-nmaq = nroProcesos #numero de procesos
-hbar = 20 #altura de cada barra
-tticks = 10 #no se usa
-#maquinas = ["P1", "P2", "P3","P4","P5"] #nombres de las maquinas
-
-# Creación de los objetos del plot:
-fig, gantt = plt.subplots()
-
-# Etiquetas de los ejes:
-gantt.set_xlabel("Tiempo")
-gantt.set_ylabel("Procesos")
-
-# Límites de los ejes:
-gantt.set_xlim(0, ht)
-gantt.set_ylim(0, nmaq*hbar)
-
-# Divisiones del eje de tiempo:
-gantt.set_xticks(range(0, ht, 1), minor=True)
-gantt.grid(True, axis='x', which='both')
-
-# Divisiones del eje de máquinas:
-gantt.set_yticks(range(hbar, nmaq*hbar, hbar), minor=True)
-gantt.grid(True, axis='y', which='minor')
-
-# Etiquetas de máquinas:
-gantt.set_yticks(np.arange(hbar/2, hbar*nmaq - hbar/2 + hbar, hbar))
-
-
-#gantt.set_yticklabels(maquinas)
-
-# Función para armar tareas:
-def agregar_tarea(t0, d, maq, nombre, color):
-# Índice de la máquina:
-    imaq = maquinas.index(maq)
-    # Posición de la barra:
-    gantt.broken_barh([(t0, d)], (hbar*imaq, hbar),
-                        facecolors=(color))
-    #Posición del texto:
-    #gantt.text(x=(t0 + d/2), y=(hbar*imaq + hbar/2),
-     #              s=f"{nombre} ({d})", va='center', color='white')
-
-# Agregamos dos tareas de ejemplo:
-
-#agregar_tarea(0, 9, "P1", "T1", "b")
-
-#agregamos tareas
-for i in range(nroProcesos):
-    agregar_tarea(inicio[i],duracion[i],maquinas[i],"xd","m")
-
-
-# Guarda la imagen en la ruta especificada
-ruta_imagen = "static/img/gantt.svg"
-fig.savefig(ruta_imagen)
-
-
-# Oculta las etiquetas del eje Y
-gantt.set_yticklabels([])
-
-#elimina los numeros del eje y
-gantt.set_yticklabels([])
-
-
 # Función para mostrar etiquetas cuando se hace zoom en el eje Y
 def on_ylims_change(event: Event):
     if event.name == 'scroll_event':
@@ -120,12 +75,59 @@ def on_ylims_change(event: Event):
         else:
             gantt.set_yticklabels([])
 
+def mostrarGrafico(procesos, inicio, duracion):
+    global nroProcesos
+    nroProcesos=len(procesos)
 
-#conectar la funcion de la rueda del mouse
-fig.canvas.mpl_connect('scroll_event', on_scroll)
+    #creando un arreglo para obtener los nombres
+    #de los procesos
+    #maquinas=[]
+    for i in range(nroProcesos):
+        maquinas.append(procesos[i].id)
+   
+    print("Nro de procesos: ",nroProcesos)
+    # Etiquetas de los ejes:
+    gantt.set_xlabel("Tiempo")
+    gantt.set_ylabel("Procesos")
+
+    # Límites de los ejes:
+    gantt.set_xlim(0, ht)
+    gantt.set_ylim(0, nmaq*hbar)
+
+    # Divisiones del eje de tiempo:
+    gantt.set_xticks(range(0, ht, 1), minor=True)
+    gantt.grid(True, axis='x', which='both')
+
+    # Divisiones del eje de máquinas:
+    gantt.set_yticks(range(hbar, nmaq*hbar, hbar), minor=True)
+    gantt.grid(True, axis='y', which='minor')
+
+    # Etiquetas de máquinas:
+    gantt.set_yticks(np.arange(hbar/2, hbar*nmaq - hbar/2 + hbar, hbar))
 
 
-plt.show()
-# Cierra la figura para liberar memoria
-plt.close(fig)
+    #agregamos tareas
+    for i in range(nroProcesos):
+        agregar_tarea(inicio[i],duracion[i],maquinas[i],"xd","m")
+
+
+    # Guarda la imagen en la ruta especificada
+    ruta_imagen = "static/img/gantt.svg"
+    fig.savefig(ruta_imagen)
+
+
+    # Oculta las etiquetas del eje Y
+    gantt.set_yticklabels([])
+
+    #elimina los numeros del eje y
+    gantt.set_yticklabels([])
+
+
+    #conectar la funcion de la rueda del mouse
+    fig.canvas.mpl_connect('scroll_event', on_scroll)
+
+
+    plt.show()
+    # Cierra la figura para liberar memoria
+    plt.close(fig)
 

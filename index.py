@@ -13,13 +13,14 @@ app = Flask(__name__)
 def principal():
     return render_template("index.html", procesos=lista_procesos, resultados=procesos, tiempos=respuestas) #buscara la vista y la mostrara
 
-@app.route('/gantt_diagram', methods=['GET', 'POST'])
-def gantt_diagram():
+@app.route('/mostrar_gantt')
+def mostrar_gantt():
     # Aquí puedes ejecutar tu función o archivo de Python
     # Por ejemplo, para ejecutar un archivo:
     os.system('python gantt.py')
     # En este ejemplo, simplemente servimos un archivo de imagen estático como respuesta
-    return render_template("gantt.html")
+    #return render_template('index.html')  # O redirige a otra página si lo prefieres
+    return "OK"
 
 
 

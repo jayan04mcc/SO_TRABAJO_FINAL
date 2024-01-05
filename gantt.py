@@ -49,7 +49,7 @@ for i in range(nroProcesos):
    maquinas.append(procesos[i].id)
 
 # Datos
-ht = 1000 #ancho_total
+ht = 20 #numero de tiempo que se vera en un inicio
 nmaq = nroProcesos #numero de procesos
 hbar = 20 #altura de cada barra
 tticks = 10 #no se usa

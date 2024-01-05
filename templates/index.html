@@ -1,88 +1,137 @@
 {%extends "./base.html" %}
 {%block title%}Visualizador de procesos{%endblock%}
 {%block body%}
-<h1>Visualizador de procesos</h1>
-<div class="row">
-    <div class="col-md-5 offset-md-1">
-        <h2>Lista de procesos</h2>
-        <div class="table-responsive">
-            <table class="table table-striped text-center">
-                <thead>
-                    <tr>
-                        <th>PID</th>
-                        <th>Nombre del proceso</th>
-                        <th>Tiempo de creacion</th>
-                        <th>Tiempo de rafaga</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {%for id, nombre, llegada, rafaga in procesos%}
-                    <tr>
-                        <td>{{id}}</td>
-                        <td>{{nombre}}</td>
-                        <td>{{llegada}}</td>
-                        <td>{{rafaga}}</td>
-                    </tr>
-                    {%endfor%}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-5 offset-md-1">
-        <h2>Algoritmo FCFS</h2>
-        <table class="table table-striped text-center">
-            <thead>
-                <tr>
-                    <th>ID Proceso</th>
-                    <th class="col">Tiempo de creacion</th>
-                    <th>Tiempo rafaga</th>
-                    <th>Tiempo de espera</th>
-                    <th>Tiempo de respuesta</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                {%for proceso in resultados%}
-                <tr>
-                    <td class="col">{{proceso.id}}</td>
-                    <td class="col">{{proceso.tiempoLlegada}}</td>
-                    <td class="col">{{proceso.tiempoRafaga}}</td>
-                    <td class="col">{{proceso.tiempoEspera}}</td>
-                    <td class="col">{{proceso.tiempoRespuesta}}</td>
-                </tr>
-                {%endfor%}
-            </tbody>
-        </table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#verGantt").click(function() {
+            $.ajax({
+                url: "/mostrar_gantt",
+                type: "GET",
+                success: function(response) {
+                    // Manejar la respuesta aquí
+                    console.log(response);  // Esto mostrará "OK" en la consola
+                    // Puedes agregar más acciones si lo deseas
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+</script>
 
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Tiempo de Espera Promedio</h5>
-                        <p class="card-text">{{tiempos[0]}} milisegundos</p>
-                    </div>
+<h1>Visualizador de los procesos</h1>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">Procesos</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">FCFS</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact-tab-pane" type="button" role="tab" aria-controls="contact-tab-pane" aria-selected="false">SJF</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="disabled-tab" data-bs-toggle="tab" data-bs-target="#disabled-tab-pane" type="button" role="tab" aria-controls="disabled-tab-pane" aria-selected="false">Round Robin</button>
+    </li>
+  </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+
+        <div class="row">
+            <div class="col-md-5 mx-auto">
+                <h2 style="margin-top: 5%; text-align: center;">Lista de procesos</h2>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-striped text-center">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>Nombre del proceso</th>
+                                <th>Tiempo de creacion</th>
+                                <th>Tiempo de rafaga</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for id, nombre, llegada, rafaga in procesos%}
+                            <tr>
+                                <td>{{id}}</td>
+                                <td>{{nombre}}</td>
+                                <td>{{llegada}}</td>
+                                <td>{{rafaga}}</td>
+                            </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
                 </div>
-            </div>
+                <div class="container mt-5 text-center">
+                    <a href="/" id="actualizarProcesos" class="btn btn-primary">Actualizar procesos</a>
 
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Respuesta Promedio</h5>
-                        <p class="card-text">{{tiempos[1]}} milisegundos</p>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="container mt-5 text-center">
-            <form action="/gantt_diagram" method="post">
-                <button type="submit" class="btn btn-primary">Ver Diagrama de Gantt</button>
-            </form>
-        </div>
-
     </div>
-</div>   
+    <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+
+        <div class="row">
+            <div class="col-md-5 mx-auto">
+                <h2 style="margin-top: 5%; text-align: center;">Algoritmo FCFS</h2>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-striped text-center">
+                        <thead>
+                            <tr>
+                                <th>ID Proceso</th>
+                                <th class="col">Tiempo de creacion</th>
+                                <th>Tiempo rafaga</th>
+                                <th>Tiempo de espera</th>
+                                <th>Tiempo de respuesta</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for proceso in resultados%}
+                            <tr>
+                                <td class="col">{{proceso.id}}</td>
+                                <td class="col">{{proceso.tiempoLlegada}}</td>
+                                <td class="col">{{proceso.tiempoRafaga}}</td>
+                                <td class="col">{{proceso.tiempoEspera}}</td>
+                                <td class="col">{{proceso.tiempoRespuesta}}</td>
+                            </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Tiempo de Espera Promedio</h5>
+                                <p class="card-text">{{tiempos[0]}} milisegundos</p>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Respuesta Promedio</h5>
+                                <p class="card-text">{{tiempos[1]}} milisegundos</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="container mt-5 text-center">
+                    <button id="verGantt">Ver Diagrama de Gantt</button>
+                </div>
+        
+            </div>
+        </div> 
+    </div>
+    <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">...</div>
+    <div class="tab-pane fade" id="disabled-tab-pane" role="tabpanel" aria-labelledby="disabled-tab" tabindex="0">...</div>
+  </div>
 
 {%endblock%}

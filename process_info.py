@@ -2,7 +2,6 @@ import psutil
 import datetime
 import logging
 from log_conf import configurar_logger
-from collections import deque
 
 configurar_logger()   
 logger = logging.getLogger('process_info.py')
@@ -100,19 +99,21 @@ def obtener_procesos():
     procesos = []
                  
     for proceso in todos_los_procesos:
-        if proceso.obtener_usuario() != 'NT AUTHORITY\SYSTEM' or proceso.obtener_usuario() != '':
-            procesos.append(proceso)
-            
+        usuario = proceso.obtener_usuario()
+        if usuario == "NT AUTHORITY\SYSTEM":
+            continue
+        procesos.append(proceso)
     return procesos
 
 def obtener_procesos_primer_plano():
     procesos = obtener_procesos() 
     primer_plano = []
-    
-    for proceso in procesos:
-        if proceso.obtener_usuario() != 'SYSTEM' or proceso.obtener_usuario() is not None:
-            primer_plano.append(proceso)
 
+    for proceso in procesos:
+        usuario = proceso.obtener_usuario()
+        if usuario == 'SYSTEM' or usuario == 'root' or usuario is None:
+            continue
+        primer_plano.append(proceso)
     return primer_plano
 
 def obtener_procesos_segundo_plano():
@@ -120,7 +121,8 @@ def obtener_procesos_segundo_plano():
     segundo_plano = []
 
     for proceso in procesos:
-        if proceso.obtener_usuario() == 'SYSTEM' or proceso.obtener_usuario() is None:
+        usuario = proceso.obtener_usuario()
+        if usuario == 'SYSTEM' or usuario == 'root' or usuario is None:
             segundo_plano.append(proceso)
             
     return segundo_plano
@@ -132,4 +134,4 @@ def obtener_procesos_fecha_llegada():
     for i in range(len(procesos)):
         procesos[i].establecer_tiempo_llegada(i)
         
-    return procesos[3:]
+    return procesos

@@ -9,23 +9,17 @@ from platform import system
 configurar_logger()
 logger = logging.getLogger('gui.py')
 
-def show_final(actual: tk.Listbox):
-    actual.delete(0, tk.END)
-    procesos = process_info.obtener_procesos() 
-    for proceso in procesos:
-        actual.insert(tk.END, f"'{proceso.obtener_nombre()}' - Time: '{proceso.obtener_fecha_llegada().strftime('%Y-%m-%d %H:%M:%S')}'-Rafaga:'{proceso.obtener_rafaga()}'")
-        
-def run_script_python(nombre: str):
-    subprocess.run(["python", f"D:/Ciencia de la Computacion/Semestre 6/Sistemas Operativos/Proyecto/SO_TRABAJO_FINAL/{nombre}.py"])
+def run_script_python(direccion: str):
+    subprocess.run(["python", direccion])
 
 def show_fcfs():
-    run_script_python('fcfs')
+    run_script_python('fcfs.py')
 
 def show_sfj():
-    run_script_python('sfj')
+    run_script_python('sfj.py')
 
 def show_round_robin():
-    run_script_python('round_robin')
+    run_script_python('round_robin.py')
 
 def actualizar_datos(tree: ttk.Treeview, vista_primer_plano: tk.Listbox, vista_segundo_plano: tk.Listbox, ventana: tk.Tk):
     
@@ -39,7 +33,7 @@ def actualizar_datos(tree: ttk.Treeview, vista_primer_plano: tk.Listbox, vista_s
     procesos_segundo_plano = process_info.obtener_procesos_segundo_plano()
     
     for proceso in procesos:
-        tree.insert('', 'end', values=(proceso.obtener_pid(), proceso.obtener_nombre(), proceso.obtener_rafaga(), proceso.obtener_fecha_llegada().strftime('%Y-%m-%d %H:%M:%S')))
+        tree.insert('', 'end', values=(proceso.obtener_pid(), proceso.obtener_nombre(), proceso.obtener_usuario(), proceso.obtener_rafaga(), proceso.obtener_fecha_llegada().strftime('%Y-%m-%d %H:%M:%S')))
     
     for proceso in procesos_primer_plano:
         vista_primer_plano.insert(tk.END, f'Pid: {proceso.obtener_pid()} -Nombre: {proceso.obtener_nombre()}')
@@ -54,17 +48,17 @@ def create_gui():
     
     ANCHO_PANTALLA = 900
     ALTURA_PANTALLA = 650
-    
-    ANCHO_VISTA_PROCESOS = 600
-    ALTURA_VISTA_PROCESOS = 400
-    
+
     ANCHO_VISTAS = 280
-    ALTURA_VISTAS = 150
+    ALTURA_VISTAS = 220
     ANCHO_TITULOS = ANCHO_VISTAS
     ALTURA_TITULOS = 20
-    
+     
     ANCHO_BOTON = ANCHO_VISTAS
     ALTURA_BOTON = 35
+    
+    ANCHO_VISTA_PROCESOS = 600
+    ALTURA_VISTA_PROCESOS = ALTURA_VISTAS * 2 + ALTURA_TITULOS * 3 + ALTURA_BOTON * 3
     
     # Crear la ventana principal
     ventana = tk.Tk()
@@ -76,16 +70,18 @@ def create_gui():
     inicial.place(x=0, y=0, width=ANCHO_VISTA_PROCESOS, height=ALTURA_TITULOS)
     
     # Crear el Treeview
-    tree = ttk.Treeview(ventana, columns=('PID', 'Nombre', 'Tiempo de rafaga', 'Tiempo de llegada'), show='headings')
+    tree = ttk.Treeview(ventana, columns=('PID', 'Nombre', 'Usuario','Tiempo de rafaga', 'Fecha de Llegada'), show='headings')
     tree.heading('PID', text='PID')
     tree.heading('Nombre', text='Nombre')
-    tree.heading('Tiempo de rafaga',text='Tiempo de rafaga')
-    tree.heading('Tiempo de llegada',text='Tiempo de llegada')
+    tree.heading('Usuario', text='Usuario')
+    tree.heading('Tiempo de rafaga',text='Tiempo de rafaga (s)')
+    tree.heading('Fecha de Llegada',text='Fecha de Llegada')
     #Definimos las columnas
     tree.column('PID', width=20, minwidth=5)
     tree.column('Nombre', width=100, minwidth=50)
+    tree.column('Usuario', width=100, minwidth=50)
     tree.column('Tiempo de rafaga', width=100, minwidth=50)
-    tree.column('Tiempo de llegada', width=80, minwidth=40)
+    tree.column('Fecha de Llegada', width=80, minwidth=40)
     #Dimensiones del treeview
     tree.place(x=0, y=ALTURA_TITULOS, width=ANCHO_VISTA_PROCESOS, height=ALTURA_VISTA_PROCESOS)
     
@@ -101,29 +97,21 @@ def create_gui():
     vista_segundo_plano = tk.Listbox(ventana, width=20, height=10)  # 20 caracteres de ancho, 10 líneas de alto
     vista_segundo_plano.place(x=605, y=ALTURA_TITULOS + ALTURA_VISTAS, width=ANCHO_VISTAS, height=ALTURA_VISTAS)
     
-    #Proceso Actual
-    labelactual = tk.Label(ventana,text="Proceso Actual")
-    labelactual.place(x=605, y=ALTURA_TITULOS + ALTURA_VISTAS * 2, width=ANCHO_TITULOS, height=ALTURA_TITULOS)
-    actual = tk.Listbox(ventana, width=20, height=10)  # 20 caracteres de ancho, 10 líneas de alto
-    actual.insert(1, "Opción 1 en Listbox 1")
-    actual.insert(2, "Opción 2 en Listbox 1")
-    actual.place(x=605, y=ALTURA_TITULOS * 2 + ALTURA_VISTAS * 2, width=ANCHO_VISTAS, height=ALTURA_VISTAS)
-      
     #Algoritmos
-    algoritmos = tk.Label(ventana,text="Algoritmos")
-    algoritmos.place(x=605, y=ALTURA_TITULOS * 2 + ALTURA_VISTAS * 3, width=ANCHO_TITULOS, height=ALTURA_TITULOS)                
+    algoritmos = tk.Label(ventana,text="Simular Ejecucion")
+    algoritmos.place(x=605, y=ALTURA_TITULOS * 2 + ALTURA_VISTAS * 2, width=ANCHO_TITULOS, height=ALTURA_TITULOS)                
     #BOTON FCFS
     boton_fcfs =tk.Button(ventana, text='FCFS', command=lambda: show_fcfs())
     boton_fcfs.pack()
-    boton_fcfs.place(x=605, y=ALTURA_TITULOS * 2 + ALTURA_VISTAS * 3 + ALTURA_BOTON, width=ANCHO_BOTON, height=ALTURA_BOTON)
+    boton_fcfs.place(x=605, y=ALTURA_TITULOS * 2 + ALTURA_VISTAS * 2 + ALTURA_BOTON, width=ANCHO_BOTON, height=ALTURA_BOTON)
     #BOTON SJC
     boton_sjc =tk.Button(ventana, text='SJF', command=lambda: show_sfj())
     boton_sjc.pack()
-    boton_sjc.place(x=605, y=ALTURA_TITULOS * 2 + ALTURA_VISTAS * 3 + ALTURA_BOTON * 2, width=ANCHO_BOTON, height=ALTURA_BOTON)
+    boton_sjc.place(x=605, y=ALTURA_TITULOS * 2 + ALTURA_VISTAS * 2 + ALTURA_BOTON * 2, width=ANCHO_BOTON, height=ALTURA_BOTON)
     #BOTON RR
     boton_round_robin =tk.Button(ventana, text='Round Robin', command=lambda: show_round_robin())
     boton_round_robin.pack()
-    boton_round_robin.place(x=605, y=ALTURA_TITULOS * 2 + ALTURA_VISTAS * 3 + ALTURA_BOTON * 3, width=ANCHO_BOTON, height=ALTURA_BOTON)
+    boton_round_robin.place(x=605, y=ALTURA_TITULOS * 2 + ALTURA_VISTAS * 2 + ALTURA_BOTON * 3, width=ANCHO_BOTON, height=ALTURA_BOTON)
     
     # Iniciar la actualización automática
     actualizar_datos(tree, vista_primer_plano, vista_segundo_plano, ventana)

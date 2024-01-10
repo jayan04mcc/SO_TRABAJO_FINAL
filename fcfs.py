@@ -3,9 +3,10 @@ import time
 import logging
 import threading as th
 import process_info
-from DiagramaGantt import plot_diagrama_gantt
 from collections import deque
 from log_conf import configurar_logger
+from gui import run_script_python
+from tkinter import messagebox
 
 configurar_logger()   
 logger = logging.getLogger('fcfs.py')
@@ -15,21 +16,18 @@ def mostrar_cola_procesos(listbox: tk.Listbox, procesos: list):
         listbox.insert(tk.END, f'Proceso: {proceso.obtener_nombre()} -Rafaga: {proceso.obtener_rafaga()}')
         time.sleep(0.015)
          
-def fcfs(cola_procesos: tk.Listbox, procesos_comp: tk.Listbox, procesos: deque, grafico_gantt: bool, automatico: bool):  
+def fcfs(cola_procesos: tk.Listbox, procesos_comp: tk.Listbox, procesos: deque):  
     anterior_tiempo_espera = 0
     anterior_rafaga = 0 
    
     procesos_completados = []
     
     recorrido = [] 
-    inicio_recorrido = 0
-    final_recorrido = 0 
-    
-    NUMERO_BARRAS = 6
     primera_iteracion = True
     
-    tiempo_respuesta_promedio = 0
-    tiempo_espera_promedio = 0
+    tiempo_espera_total = 0
+    tiempo_respuesta_total = 0
+    cantidad_procesos = len(procesos)
         
     if procesos_comp.size() > 0:
         procesos_comp.delete(0, tk.END)
@@ -41,10 +39,11 @@ def fcfs(cola_procesos: tk.Listbox, procesos_comp: tk.Listbox, procesos: deque, 
             anterior_tiempo_espera = 0
             anterior_rafaga = proceso.obtener_rafaga()
             recorrido.append((proceso.obtener_nombre(), 0, proceso.obtener_rafaga()))
-            final_recorrido += 1
             primera_iteracion = False
             cola_procesos.delete(0) 
-            procesos_comp.insert(tk.END,f'Proceso: {proceso.obtener_nombre()} -Tiempo de Finalizacion: {proceso.obtener_rafaga()}')
+            procesos_comp.insert(tk.END,f'Proceso: {proceso.obtener_nombre()} -Tiempo de Finalizacion: {proceso.obtener_rafaga()}')       
+            tiempo_espera_total += proceso.obtener_tiempo_espera()
+            tiempo_respuesta_total += proceso.obtener_tiempo_respuesta()
             continue
                
         proceso.establecer_tiempo_espera(anterior_tiempo_espera + anterior_rafaga)     
@@ -52,7 +51,6 @@ def fcfs(cola_procesos: tk.Listbox, procesos_comp: tk.Listbox, procesos: deque, 
            
         recorrido.append((proceso.obtener_nombre(), proceso.obtener_tiempo_espera(), proceso.obtener_rafaga()))
         procesos_completados.append((proceso.obtener_nombre(), proceso.obtener_tiempo_respuesta()))
-        final_recorrido += 1
         
         anterior_tiempo_espera = proceso.obtener_tiempo_espera()
         anterior_rafaga = proceso.obtener_rafaga()
@@ -60,41 +58,44 @@ def fcfs(cola_procesos: tk.Listbox, procesos_comp: tk.Listbox, procesos: deque, 
         
         cola_procesos.delete(0) 
         procesos_comp.insert(tk.END,f'Proceso: {proceso.obtener_nombre()} -Tiempo de Finalizacion: {proceso.obtener_tiempo_respuesta()}')
-        
-        if grafico_gantt and final_recorrido % NUMERO_BARRAS == 0:
-            aux_recorrido = recorrido[inicio_recorrido:final_recorrido]
-            
-            for nombre, inicio, duracion in aux_recorrido:
-                logger.info(f'(Recorrido) Nombre: {nombre} Inicio: {inicio} Duracion: {duracion}')
-            
-            plot_diagrama_gantt(aux_recorrido[::-1])
-        
-            inicio_recorrido = final_recorrido
-                       
-    if grafico_gantt and inicio_recorrido != final_recorrido:
-        aux_recorrido = recorrido[inicio_recorrido:final_recorrido]
-        
-        for nombre, inicio, duracion in aux_recorrido:
-            logger.info(f'(Recorrido) Nombre: {nombre} Inicio: {inicio} Duracion: {duracion}')
-       
-        plot_diagrama_gantt(aux_recorrido[::-1])
-        
-    return procesos_completados, recorrido
+        tiempo_espera_total += proceso.obtener_tiempo_espera()
+        tiempo_respuesta_total += proceso.obtener_tiempo_respuesta()
+    
+    return procesos_completados, tiempo_espera_total / cantidad_procesos, tiempo_respuesta_total / cantidad_procesos, recorrido
 
-def show_multiple(cola_procesos, procesos_completados, procesos, grafico_gantt, automatico):
-    mostrar_cola_procesos(cola_procesos, procesos)
-    recorrido = fcfs(cola_procesos, procesos_completados, deque(procesos), grafico_gantt, automatico)[1]
+def show_multiple(cola_procesos, procesos_completados, iteraciones: int):   
+    procesos_com= []
+    recorrido = []
+    tiempo_espera_promedio = 0
+    tiempo_respuesta_promedio = 0
     
-    logger.info(f'Grafico Gantt: {grafico_gantt} Automatico: {automatico}')
+    for i in range(iteraciones):
+        if procesos_completados.size() > 0:
+            procesos_completados.delete(0, tk.END)    
+        logger.info(f'Iteracion: {i}')      
+        procesos = process_info.obtener_procesos_fecha_llegada()
+        mostrar_cola_procesos(cola_procesos, procesos)
+        aux_procesos_com, aux_tiempo_espera_promedio, aux_tiempo_respuesta_promedio, aux_recorrido = fcfs(cola_procesos, procesos_completados, deque(procesos))
+        tiempo_espera_promedio += aux_tiempo_espera_promedio
+        tiempo_respuesta_promedio += aux_tiempo_respuesta_promedio
+        recorrido.extend(aux_recorrido)
+        
+    messagebox.showinfo("Resultados", f'Tiempo Espera Promedio: {round(tiempo_espera_promedio / iteraciones, 2)}\nTiempo Respuesta Promedio: {round(tiempo_respuesta_promedio / iteraciones, 2)}')   
     
-    if not grafico_gantt:
-        for nombre, inicio, duracion in recorrido:
-            logger.info(f'(Recorrido) Nombre: {nombre} Inicio: {inicio} Duracion: {duracion}')
-    
-       
-def algoritmo_fcfs(procesos: list, grafico_gantt: bool, automatico: bool):
-    hilo1=th.Thread(target=show_multiple, args=(listbox_cola, listbox_procesos_completados, procesos, grafico_gantt, automatico))
+    try:
+        with open('recorrido.txt', 'w') as archivo:
+            for nombre, inicio, duracion in recorrido:
+                logger.info(f'(Recorrido) Nombre: {nombre} Inicio: {inicio} Duracion: {duracion}')
+                archivo.write(f'{nombre} {inicio} {duracion}\n')           
+    except Exception as e:
+        logger.error(e)
+          
+def algoritmo_fcfs(iteraciones: int):
+    hilo1=th.Thread(target=show_multiple, args=(listbox_cola, listbox_procesos_completados, iteraciones))
     hilo1.start()
+    
+def grafica_gantt():
+    run_script_python('DiagramaGantt.py')
 
 if __name__ == "__main__":   
     
@@ -113,7 +114,6 @@ if __name__ == "__main__":
     ventana = tk.Tk()
     ventana.geometry(f'{ANCHO_VENTANA}x{ALTURA_VENTANA}')
     ventana.title("Simulación FCFS")
-    procesos = process_info.obtener_procesos_fecha_llegada()
 
     # Crear el Listbox para la cola de procesos
     cola_procesos = tk.Label(ventana, text="Cola de Procesos")
@@ -127,22 +127,19 @@ if __name__ == "__main__":
     listbox_procesos_completados = tk.Listbox(ventana)
     listbox_procesos_completados.place(x=450, y=50, width=ANCHO_VISTAS, height=ALTURA_VISTAS)
      
-    # Variable para almacenar el estado
-    grafico_gantt = tk.BooleanVar()
-    automatico = tk.BooleanVar()
+    titulo_entrada_iteraciones = tk.Label(ventana, text="Iteraciones: ")
+    titulo_entrada_iteraciones.pack()
+    titulo_entrada_iteraciones.place(x=ANCHO_VENTANA / 2 - ANCHO_TITULOS - 90, y=ALTURA_VENTANA - ALTURA_BOTON - 10, width=ANCHO_BOTON, height=ALTURA_BOTON)
+    entrada_iteraciones  = tk.Entry(ventana)
+    entrada_iteraciones.pack()
+    entrada_iteraciones.place(x=ANCHO_VENTANA / 2 - ANCHO_TITULOS + 20, y=ALTURA_VENTANA - ALTURA_BOTON - 10, width=ANCHO_BOTON / 2, height=ALTURA_BOTON)
 
-    # Crear botón de opción
-    boton_diagrama_gantt = tk.Checkbutton(ventana, text="Grafico de Gantt", variable=grafico_gantt)
-    boton_diagrama_gantt.pack()
-    boton_diagrama_gantt.place(x=ANCHO_VENTANA / 2 + ANCHO_BOTON / 2, y=ALTURA_VENTANA - ALTURA_BOTON - 10, width=ANCHO_BOTON, height=ALTURA_BOTON)
-    
-    # Crear botón de opción
-    boton_automatico = tk.Checkbutton(ventana, text="Automatico", variable=automatico)
-    boton_automatico.pack()
-    boton_automatico.place(x=ANCHO_VENTANA / 2 + ANCHO_BOTON + ANCHO_BOTON / 2, y=ALTURA_VENTANA - ALTURA_BOTON - 10, width=ANCHO_BOTON, height=ALTURA_BOTON)
-    
-    boton_iniciar = tk.Button(ventana, text="Iniciar Simulación", command=lambda: algoritmo_fcfs(procesos, grafico_gantt.get(), automatico.get()))
+    boton_iniciar = tk.Button(ventana, text="Iniciar Simulación", command=lambda: algoritmo_fcfs(int(entrada_iteraciones.get())))
     boton_iniciar.place(x=ANCHO_VENTANA / 2 - ANCHO_BOTON - 50, y=ALTURA_VENTANA - ALTURA_BOTON - 10, width=ANCHO_BOTON, height=ALTURA_BOTON)
 
+    boton_grafica_gantt = tk.Button(ventana, text="Grafica de Gantt", command=lambda: grafica_gantt())
+    boton_grafica_gantt.pack()
+    boton_grafica_gantt.place(x=ANCHO_VENTANA / 2 + ANCHO_BOTON / 2 - 25, y=ALTURA_VENTANA - ALTURA_BOTON - 10, width=ANCHO_BOTON, height=ALTURA_BOTON)
+    
     # Iniciar la aplicación
     ventana.mainloop()
